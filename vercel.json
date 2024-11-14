@@ -1,0 +1,7 @@
+# healthcare-interconsultas/vercel.json
+{
+  "buildCommand": "cd apps/web && npm run build",
+  "outputDirectory": "apps/web/.next",
+  "installCommand": "npm install",
+  "monorepo": true
+}

@@ -1,18 +1,23 @@
 {
-    "name": "healthcare-interconsultas",
-    "private": true,
-    "packageManager": "npm@10.9.0",
-    "workspaces": [
-      "apps/*",
-      "packages/*"
-    ],
-    "scripts": {
-      "dev": "turbo run dev",
-      "build": "turbo run build",
-      "start": "turbo run start",
-      "lint": "turbo run lint"
-    },
-    "devDependencies": {
-      "turbo": "^2.2.3"
-    }
+  "name": "healthcare-interconsultas",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "latest",
+    "prettier": "^3.0.0",
+    "eslint": "^8.0.0"
+  },
+  "dependencies": {
+    "clsx": "^2.0.0",
+    "tailwind-merge": "^2.0.0"
   }
+}
