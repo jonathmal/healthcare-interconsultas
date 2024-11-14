@@ -1,0 +1,8 @@
+# healthcare-interconsultas/.gitignore
+node_modules/
+.env
+.env.local
+.next/
+dist/
+build/
+.turbo
