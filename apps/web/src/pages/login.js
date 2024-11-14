@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { apiClient } from '/Users/jonathanjethmal/Desktop/sistema-interconsultas/healthcare-interconsultas/packages/shared/src/utils';
+import { apiClient } from '@/utils';
 
 export default function Login() {
   const router = useRouter();
