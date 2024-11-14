@@ -1,13 +1,13 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [".env", "**/.env.*local"],  // Added local env files
-  "tasks": {  // "tasks" is correct (newer than "pipeline")
+  "globalDependencies": [".env", "**/.env.*local"],
+  "tasks": { 
     "build": {
       "dependsOn": ["^build"],
       "outputs": [
         "dist/**", 
         ".next/**",
-        "!.next/cache/**"  // Exclude Next.js cache
+        "!.next/cache/**"
       ]
     },
     "lint": {
@@ -17,7 +17,7 @@
       "cache": false,
       "persistent": true
     },
-    "clean": {  // Added clean task
+    "clean": { 
       "cache": false
     }
   }
