@@ -1,13 +1,13 @@
 {
-    "version": 2,
-    "framework": "nextjs",
-    "outputDirectory": ".next",
-    "buildCommand": "npm run build",
-    "installCommand": "npm install",
-    "rewrites": [
-      {
-        "source": "/api/:path*",
-        "destination": "https://sistema-interconsultas-api-4c601dfcf805.herokuapp.com/api/:path*"
-      }
-    ]
-  }
+  "version": 2,
+  "framework": "nextjs",
+  "rootDirectory": "apps/web",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://sistema-interconsultas-api-4c601dfcf805.herokuapp.com/api/:path*"
+    }
+  ]
+}
