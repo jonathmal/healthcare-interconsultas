@@ -1,4 +1,3 @@
-// healthcare-interconsultas/apps/web/next.config.js
 const path = require('path');
 
 /** @type {import('next').NextConfig} */
@@ -10,11 +9,16 @@ const nextConfig = {
     };
     return config;
   },
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL
+  },
   async rewrites() {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:4000/api/:path*',  // Changed to port 4000
+        destination: process.env.NODE_ENV === 'development' 
+          ? 'http://localhost:4000/api/:path*'
+          : `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`,
         basePath: false
       }
     ]

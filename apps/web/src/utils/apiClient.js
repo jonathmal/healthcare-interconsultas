@@ -1,19 +1,28 @@
-// healthcare-interconsultas/packages/shared/src/utils/apiClient.js
+// healthcare-interconsultas/apps/web/src/utils/apiClient.js
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';  // Changed port and removed /api
+const getBaseUrl = () => {
+  if (typeof window === 'undefined') {
+    // Server-side
+    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+  }
+  // Client-side
+  return window.ENV_CONFIG?.API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+};
 
 export const apiClient = {
   async fetch(endpoint, options = {}) {
-    const token = localStorage.getItem('token');
-    
-    const defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-    };
-
+    // Move token access inside try block since localStorage is only available client-side
     try {
-      // Add /api here
-      const fullUrl = `${BASE_URL}/api${endpoint}`;
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      
+      const defaultHeaders = {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+      };
+
+      const baseUrl = getBaseUrl();
+      const fullUrl = `${baseUrl}/api${endpoint}`;
+      
       console.log('Making request to:', fullUrl);
       console.log('Request options:', {
         ...options,
@@ -23,7 +32,7 @@ export const apiClient = {
         }
       });
 
-      const response = await fetch(fullUrl, {  // Use fullUrl here
+      const response = await fetch(fullUrl, {
         ...options,
         headers: {
           ...defaultHeaders,
@@ -35,7 +44,7 @@ export const apiClient = {
       const responseData = await response.text();
       console.log('Response data:', responseData);
 
-      if (response.status === 401) {
+      if (response.status === 401 && typeof window !== 'undefined') {
         localStorage.removeItem('token');
         window.location.href = '/login';
         return {};
@@ -48,16 +57,6 @@ export const apiClient = {
       return responseData ? JSON.parse(responseData) : null;
     } catch (error) {
       console.error('API Error:', error);
-      console.error('Request details:', {
-        url: fullUrl,  // Use fullUrl here too
-        options: {
-          ...options,
-          headers: {
-            ...defaultHeaders,
-            ...(options.headers || {})
-          }
-        }
-      });
       throw error;
     }
   },
