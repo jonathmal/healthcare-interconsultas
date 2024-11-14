@@ -2,12 +2,15 @@
   "name": "sistema-interconsultas-frontend",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
+  {
+    "scripts": {
+      "build": "turbo run build",
+      "dev": "turbo run dev",
+      "lint": "turbo run lint",
+      "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+      "postinstall": "cd apps/web && npm install"
+    }
+  }
   "dependencies": {
     "@healthcare/shared": "*",
     "@jridgewell/gen-mapping": "^0.3.5",
