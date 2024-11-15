@@ -1,4 +1,3 @@
-// src/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -14,6 +13,8 @@ const corsOptions = {
       'https://www.simedhst.vercel.app'
     ];
     
+    console.log('Request Origin:', origin);
+    
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
@@ -21,7 +22,7 @@ const corsOptions = {
       callback(null, true);
     } else {
       console.log('Origin blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
+      callback(null, false); // Return false instead of an error
     }
   },
   credentials: true,
@@ -38,9 +39,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Request logging middleware
+// Request logging middleware with enhanced logging
 app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log('Request Headers:', req.headers);
   next();
 });
 
@@ -84,8 +86,8 @@ console.log('Connecting to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
-  socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 })
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => {
@@ -102,20 +104,11 @@ mongoose.connection.on('disconnected', () => {
   console.log('MongoDB disconnected');
 });
 
-// Error handling middleware - Must be after routes
+// Error handling middleware - Updated to handle CORS errors differently
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   
-  // Handle CORS errors specifically
-  if (err.message === 'Not allowed by CORS') {
-    return res.status(403).json({
-      exito: false,
-      error: 'Origin not allowed by CORS',
-      details: process.env.NODE_ENV === 'development' ? err.message : undefined
-    });
-  }
-
-  // Handle other errors
+  // Generic error response
   res.status(err.status || 500).json({
     exito: false,
     error: err.message || 'Error interno del servidor',
@@ -123,7 +116,7 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Add this before your 404 handler in server.js
+// Debug routes endpoint
 app.get('/api/debug/routes', (req, res) => {
   const routes = [];
   app._router.stack.forEach(middleware => {
@@ -146,7 +139,7 @@ app.get('/api/debug/routes', (req, res) => {
   res.json(routes);
 });
 
-// 404 handler - Must be after all routes
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     exito: false,

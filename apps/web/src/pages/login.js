@@ -11,38 +11,29 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // In your Login component, update the handleSubmit function:
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     try {
-      const data = await apiClient.post('/auth/login', credentials);
+      console.log('Attempting login...');
+      const data = await apiClient.post('login', credentials); // Remove leading slash
       
-      // Guardar el token
+      if (!data || !data.token) {
+        throw new Error('Invalid response from server');
+      }
+      
       localStorage.setItem('token', data.token);
+      localStorage.setItem('usuario', JSON.stringify(data.usuario));
       
-      // Guardar la información del usuario
-      const usuarioInfo = {
-        nombre: data.usuario.nombre,
-        email: data.usuario.email,
-        rol: data.usuario.rol,
-        servicio: data.usuario.servicio,
-        especialidad: data.usuario.especialidad
-      };
-      
-      localStorage.setItem('usuario', JSON.stringify(usuarioInfo));
-      
-      // Registro exitoso en consola
-      console.log('Sesión iniciada como:', usuarioInfo.nombre);
-      console.log('Rol:', usuarioInfo.rol);
-      console.log('Servicio:', usuarioInfo.servicio);
-      
-      // Redirigir al usuario
+      console.log('Login successful:', data.usuario.nombre);
       router.push('/');
     } catch (err) {
-      console.error('Error de inicio de sesión:', err);
-      setError(err.message || 'Error al conectar con el servidor');
+      console.error('Login error:', err);
+      setError(err.message || 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
