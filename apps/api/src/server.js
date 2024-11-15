@@ -10,19 +10,22 @@ const corsOptions = {
     const allowedOrigins = [
       'http://localhost:3000',
       'https://simedhst.vercel.app',
-      'https://www.simedhst.vercel.app'
+      'https://www.simedhst.vercel.app',
+      'https://healthcare-interconsultas-hsjg5fl6q-jonathmals-projects.vercel.app'
     ];
     
     console.log('Request Origin:', origin);
     
     // Allow requests with no origin (like mobile apps or curl requests)
+    const regex = /^https:\/\/.*\.vercel\.app$/;
+
     if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
+
+    if (allowedOrigins.includes(origin) || regex.test(origin)) {
       callback(null, true);
     } else {
       console.log('Origin blocked by CORS:', origin);
-      callback(null, false); // Return false instead of an error
+      callback(null, false);
     }
   },
   credentials: true,
