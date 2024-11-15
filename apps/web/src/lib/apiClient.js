@@ -1,25 +1,30 @@
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sistema-interconsultas-api-4c601dfcf805.herokuapp.com';
+// lib/apiClient.js or utils/apiClient.js
+const BASE_URL = 'https://sistema-interconsultas-api-4c601dfcf805.herokuapp.com';
 
 export const apiClient = {
   async fetch(endpoint, options = {}) {
-    const token = localStorage.getItem('token');
-    
-    const defaultHeaders = {
-      'Content-Type': 'application/json',
-      ...(token && { 'Authorization': `Bearer ${token}` })
-    };
-
     try {
-      const fullUrl = `${BASE_URL}${endpoint}`;
-      console.log('Making request to:', fullUrl); // For debugging
+      const token = localStorage.getItem('token');
+      
+      // Make sure endpoint starts with a slash
+      const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+      // Add /api prefix if not present
+      const apiEndpoint = cleanEndpoint.startsWith('/api') ? cleanEndpoint : `/api${cleanEndpoint}`;
+      // Construct full URL
+      const fullUrl = `${BASE_URL}${apiEndpoint}`;
+      
+      console.log('Making request to:', fullUrl); // Debug log
       
       const response = await fetch(fullUrl, {
         ...options,
         headers: {
-          ...defaultHeaders,
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` }),
           ...options.headers
         }
       });
+
+      console.log('Response status:', response.status); // Debug log
 
       if (response.status === 401) {
         localStorage.removeItem('token');
@@ -32,34 +37,19 @@ export const apiClient = {
         throw new Error(errorData.message || 'Error en la petición');
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log('Response data:', data); // Debug log
+      return data;
     } catch (error) {
       console.error('API Error:', error);
       throw error;
     }
   },
 
-  get(endpoint) {
-    return this.fetch(endpoint);
-  },
-
   post(endpoint, data) {
     return this.fetch(endpoint, {
       method: 'POST',
       body: JSON.stringify(data)
-    });
-  },
-
-  put(endpoint, data) {
-    return this.fetch(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data)
-    });
-  },
-
-  delete(endpoint) {
-    return this.fetch(endpoint, {
-      method: 'DELETE'
     });
   }
 };

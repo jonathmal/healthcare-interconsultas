@@ -18,7 +18,7 @@ export default function Login() {
   
     try {
       console.log('Attempting login...');
-      const response = await apiClient.post('/api/auth/login', credentials);
+      const response = await apiClient.post('/auth/login', credentials);
       
       // Check for successful response
       if (response.exito && response.token && response.usuario) {
@@ -37,9 +37,9 @@ export default function Login() {
         
         // Redirect based on role
         if (response.usuario.rol === 'ADMIN') {
-          router.push('/admin'); // or wherever admins should go
+          router.push('/admin');
         } else {
-          router.push('/'); // default route for other users
+          router.push('/');
         }
       } else {
         throw new Error('Respuesta inválida del servidor');
