@@ -3,10 +3,10 @@
   "private": true,
   "packageManager": "npm@10.9.0",
   "scripts": {
-    "dev": "cd healthcare-interconsultas/apps/api && npm run dev",
-    "build": "cd healthcare-interconsultas/apps/api && npm run build",
-    "start": "cd healthcare-interconsultas/apps/api && npm start",
-    "heroku-postbuild": "cd healthcare-interconsultas/apps/api && npm install"
+    "dev": "node apps/api/src/server.js",
+    "build": "echo 'No build step needed'",
+    "start": "node apps/api/src/server.js",
+    "heroku-postbuild": "npm install --prefix apps/api"
   },
   "engines": {
     "node": "22.11.0",
