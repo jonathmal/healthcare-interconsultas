@@ -1,5 +1,4 @@
-// lib/apiClient.js
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sistema-interconsultas-api-4c601dfcf805.herokuapp.com';
 
 export const apiClient = {
   async fetch(endpoint, options = {}) {
@@ -11,7 +10,10 @@ export const apiClient = {
     };
 
     try {
-      const response = await fetch(`${BASE_URL}${endpoint}`, {
+      const fullUrl = `${BASE_URL}${endpoint}`;
+      console.log('Making request to:', fullUrl); // For debugging
+      
+      const response = await fetch(fullUrl, {
         ...options,
         headers: {
           ...defaultHeaders,
@@ -20,14 +22,14 @@ export const apiClient = {
       });
 
       if (response.status === 401) {
-        // Token expirado o inválido
         localStorage.removeItem('token');
         window.location.href = '/login';
         return;
       }
 
       if (!response.ok) {
-        throw new Error('Error en la petición');
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Error en la petición');
       }
 
       return await response.json();
