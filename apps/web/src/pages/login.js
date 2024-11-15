@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
-import { apiClient } from '@/utils';
+import { apiClient } from '../lib/apiClient';  // Update this path to match your file structure
 
 export default function Login() {
   const router = useRouter();
@@ -11,8 +11,6 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // In your Login component, update the handleSubmit function:
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -20,17 +18,32 @@ export default function Login() {
   
     try {
       console.log('Attempting login...');
-      const data = await apiClient.post('login', credentials); // Remove leading slash
+      const response = await apiClient.post('/api/auth/login', credentials);
       
-      if (!data || !data.token) {
-        throw new Error('Invalid response from server');
+      // Check for successful response
+      if (response.exito && response.token && response.usuario) {
+        // Store token
+        localStorage.setItem('token', response.token);
+        
+        // Store user info
+        localStorage.setItem('usuario', JSON.stringify(response.usuario));
+        
+        // Store service info if needed
+        if (response.usuario.servicio) {
+          localStorage.setItem('servicio', JSON.stringify(response.usuario.servicio));
+        }
+        
+        console.log('Login successful:', response.usuario.nombre);
+        
+        // Redirect based on role
+        if (response.usuario.rol === 'ADMIN') {
+          router.push('/admin'); // or wherever admins should go
+        } else {
+          router.push('/'); // default route for other users
+        }
+      } else {
+        throw new Error('Respuesta inválida del servidor');
       }
-      
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', JSON.stringify(data.usuario));
-      
-      console.log('Login successful:', data.usuario.nombre);
-      router.push('/');
     } catch (err) {
       console.error('Login error:', err);
       setError(err.message || 'Error al iniciar sesión');
